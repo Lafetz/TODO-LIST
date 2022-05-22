@@ -8,6 +8,9 @@ const task = function () {
   const removeList = function (listIndex) {
     lists.splice(listIndex, 1);
   };
+  const listName = function (listIndex) {
+    return lists[listIndex].name;
+  };
   const editList = function (listIndex, newName) {
     lists[listIndex].name = newName;
   };
@@ -36,6 +39,7 @@ const task = function () {
     editTaskTitle: editTaskTitle,
     editTaskDesc: editTaskDesc,
     editpriority: editpriority,
+    listName: listName,
     lists,
   };
 };

@@ -13,5 +13,12 @@ const newTask = function (title, description, priority) {
     priority,
   };
 };
+const pColor = function (x) {
+  if (x == 0) {
+    return "green";
+  } else if (x == 1) {
+    return "yellow";
+  } else return "red";
+};
 
-export { newList, newTask };
+export { newList, newTask, pColor };

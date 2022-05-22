@@ -28,15 +28,64 @@ body {
   background-color: rgb(158, 158, 158);
   height: 50%;
 }
-.lists {
+.bottom-container {
+  padding: 30px 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 0px;
   background-color: rgb(65, 65, 65);
   height: 50%;
+}
+.lists {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.list {
+  display: flex;
+  justify-content: space-between;
+  height: 1.5rem;
+  background-color: bisque;
+  align-items: center;
+}
+
+.top-bottom {
+  display: flex;
+  justify-content: space-between;
 }
 .tasks {
   background-color: rgb(170, 159, 145);
   flex-basis: 100%;
+  padding: 25px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.task {
+  display: flex;
+  justify-content: space-between;
+  background-color: grey;
+}
+.task p {
+  display: inline;
+  width: fit-content;
+}
+
+.leftTask {
+  display: flex;
+}
+.priority {
+  display: inline;
+  width: 50px;
+  height: 100%;
 }
 .taskDetail {
   background-color: rgb(75, 67, 82);
   width: 50%;
+}
+
+button {
+  width: fit-content;
 }
