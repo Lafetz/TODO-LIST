@@ -6,19 +6,30 @@ const newList = function (name) {
     tasks: memebers,
   };
 };
-const newTask = function (title, description, priority) {
+const newTask = function (title, description, priority, checkbox, taskDate) {
   return {
     title,
     description,
     priority,
+    checkbox,
+    taskDate,
   };
 };
 const pColor = function (x) {
   if (x == 0) {
     return "green";
   } else if (x == 1) {
-    return "yellow";
+    return "yellow"; //title dessc priority
   } else return "red";
 };
+const status = function (x) {
+  if (x) return "Done";
+  else return "not Done";
+};
 
-export { newList, newTask, pColor };
+const clearDetail = function () {
+  const detail = document.querySelector(".taskDetaill");
+  detail.textContent = "";
+};
+
+export { newList, newTask, pColor, clearDetail, status };

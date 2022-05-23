@@ -55,10 +55,15 @@ body {
   display: flex;
   justify-content: space-between;
 }
-.tasks {
+.tasksDiv {
   background-color: rgb(170, 159, 145);
   flex-basis: 100%;
   padding: 25px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.tasks {
   display: flex;
   flex-direction: column;
   gap: 5px;
@@ -72,7 +77,10 @@ body {
   display: inline;
   width: fit-content;
 }
-
+.addTask {
+  margin: auto;
+  height: 2rem;
+}
 .leftTask {
   display: flex;
 }
@@ -88,4 +96,26 @@ body {
 
 button {
   width: fit-content;
+}
+
+.background {
+  background-color: rgba(0, 0, 0, 0.56);
+  height: 100%;
+  width: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 100;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.done {
+  background-color: rgba(255, 0, 0, 0.5);
+}
+.done p {
+  text-decoration: none;
+  text-decoration: underline;
+  text-decoration: rgb(255, 255, 255);
 }

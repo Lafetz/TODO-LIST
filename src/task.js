@@ -14,8 +14,15 @@ const task = function () {
   const editList = function (listIndex, newName) {
     lists[listIndex].name = newName;
   };
-  const addTask = function (listI, title, description, priority) {
-    let task = newTask(title, description, priority);
+  const addTask = function (
+    listI,
+    title,
+    description,
+    taskDate,
+    priority,
+    checkbox
+  ) {
+    let task = newTask(title, description, priority, checkbox, taskDate);
     lists[listI].tasks.push(task);
   };
   const removeTask = function (listIndex, taskIndex) {
@@ -30,6 +37,21 @@ const task = function () {
   const editpriority = function (listIndex, taskIndex, newpriority) {
     lists[listIndex].tasks[taskIndex].priority = newpriority;
   };
+  const boxChange = function (listIndex, taskIndex, checkbox) {
+    lists[listIndex].tasks[taskIndex].checkbox = checkbox;
+  };
+  const editTask = function (
+    listIndex,
+    taskIndex,
+    newtitle,
+    newDescription,
+    newpriority
+  ) {
+    lists[listIndex].tasks[taskIndex].title = newtitle;
+    lists[listIndex].tasks[taskIndex].description = newDescription;
+    lists[listIndex].tasks[taskIndex].priority = newpriority;
+  };
+
   return {
     addList: addList,
     removeList: removeList,
@@ -40,6 +62,8 @@ const task = function () {
     editTaskDesc: editTaskDesc,
     editpriority: editpriority,
     listName: listName,
+    editTask: editTask,
+    boxChange: boxChange,
     lists,
   };
 };
