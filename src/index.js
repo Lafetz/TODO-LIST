@@ -1,12 +1,38 @@
 import { task } from "./task.js";
-import { pColor, clearDetail } from "./functions.js";
+import { pColor, clearDetail, dateArray, filterToday } from "./functions.js";
+import format from "date-fns/format";
+import isBefore from "date-fns/isBefore";
 
-const tasks = task();
+let tasks = task();
 
+const sortTask = function (listIndex) {
+  if (tasks.lists[listIndex] == undefined) return;
+  tasks.lists[listIndex].tasks.sort((a, b) => {
+    const aDate = new Date(a.taskDate[0], a.taskDate[1], a.taskDate[2]);
+    const bDate = new Date(b.taskDate[0], b.taskDate[1], b.taskDate[2]);
+    if (isBefore(bDate, aDate)) {
+      return 1;
+    } else return -1;
+  });
+};
+const saveLocal = function () {
+  localStorage.setItem(
+    "storage",
+    JSON.stringify({
+      key: tasks,
+    })
+  );
+  let oop = localStorage.getItem("storage");
+  console.log(JSON.parse(oop).key.lists);
+};
+const getLocal = function () {
+  let oop = localStorage.getItem("storage");
+
+  return JSON.parse(oop).key;
+};
 const displayLists = function () {
   const lists = document.querySelector(".lists");
   lists.textContent = "";
-
   if (tasks.lists.length == 0) {
     const tasksDiv = document.querySelector(".tasks");
     const rightContainer = document.querySelector(".newTask");
@@ -24,11 +50,13 @@ const displayLists = function () {
 
     lists.append(list);
     list.addEventListener("click", () => {
+      sortTask(i);
       displayTasks(i);
     });
     list.append(listName, removeBtn);
     removeBtn.addEventListener("click", () => {
       tasks.removeList(i);
+      saveLocal();
       displayLists();
     });
     list.append(listName, removeBtn);
@@ -37,7 +65,7 @@ const displayLists = function () {
 
 const displayTasks = function (listIndex) {
   clearDetail();
-  console.log(tasks.lists);
+
   if (tasks.lists.length == 0) return;
   const tasksDiv = document.querySelector(".tasks");
 
@@ -49,6 +77,7 @@ const displayTasks = function (listIndex) {
   newTask.classList.add("addTask");
   newTask.addEventListener("click", () => {
     addTask(listIndex);
+    saveLocal();
   });
   rightContainer.append(newTask);
   if (tasks.lists[listIndex] == undefined) {
@@ -62,7 +91,6 @@ const displayTasks = function (listIndex) {
     const taskDiv = document.createElement("div");
 
     taskDiv.addEventListener("click", () => {
-      //////////////////////////////////////////
       taskDetail(listIndex, i);
     });
     taskDiv.classList.add("task");
@@ -80,9 +108,11 @@ const displayTasks = function (listIndex) {
       if (event.currentTarget.checked) {
         tasks.lists[listIndex].tasks[i].checkbox = true;
         displayTasks(listIndex);
+        saveLocal();
       } else {
         tasks.lists[listIndex].tasks[i].checkbox = false;
         displayTasks(listIndex);
+        saveLocal();
       }
     });
     taskTitle.textContent = tasks.lists[listIndex].tasks[i].title;
@@ -154,16 +184,18 @@ const addTask = function (listIndex) {
   bkBackground.append(newTask);
   body.append(bkBackground);
   Submit.addEventListener("click", (e) => {
-    console.log(dueDate.valueAsDate);
     e.preventDefault();
     tasks.addTask(
       listIndex,
       taskTitle.value,
       description.value,
-      dueDate.valueAsDate
+      priority.value,
+      false,
+      dueDate.value.split("-")
     );
     body.removeChild(bkBackground);
     displayTasks(listIndex);
+    sortTask(listIndex);
   });
 };
 const statu = function (x) {
@@ -180,11 +212,14 @@ const taskDetail = function (listIndex, taskIndex) {
   const form = document.createElement("form");
   const name = document.createElement("input");
   const dueDate = document.createElement("div");
-  dueDate.textContent = `Due Date${tasks.lists[listIndex].tasks[taskIndex].taskDate}`;
+
+  const arrayDate = dateArray(tasks, listIndex, taskIndex);
+
+  dueDate.textContent = `Due Date${format(new Date(...arrayDate), "PPPP")}`; ///////////////////////////////////////////
 
   const status = document.createElement("div");
   const stat = statu(tasks.lists[listIndex].tasks[taskIndex].checkbox);
-  status.textContent = `Status:${stat}`; ////////////////////////////////////////
+  status.textContent = `Status:${stat}`;
   name.setAttribute(
     "value",
     `${tasks.lists[listIndex].tasks[taskIndex].title}`
@@ -202,18 +237,31 @@ const taskDetail = function (listIndex, taskIndex) {
     "value",
     `${tasks.lists[listIndex].tasks[taskIndex].priority}`
   );
-
+  const priorityLable = document.createElement("label");
+  priorityLable.textContent = "Priority";
+  priorityLable.append(priority);
   const remove = document.createElement("button");
   remove.textContent = "Remove";
   remove.addEventListener("click", () => {
     tasks.removeTask(listIndex, taskIndex);
     clearDetail();
+    saveLocal();
     displayTasks(listIndex);
   });
   let submit = document.createElement("button");
   submit.textContent = "edit";
   submit.classList.add("edit");
-  form.append(name, descripition, priority, dueDate, status, submit, remove);
+
+  form.append(
+    name,
+    descripition,
+    priorityLable,
+    dueDate,
+    status,
+    submit,
+    remove
+  );
+
   detail.append(form);
   rightContainer.appendChild(detail);
   submit.addEventListener("click", (e) => {
@@ -227,29 +275,90 @@ const taskDetail = function (listIndex, taskIndex) {
     );
     clearDetail();
     displayTasks(listIndex);
+    saveLocal();
   });
 };
 
 tasks.addList("List0");
 tasks.addList("List1");
-tasks.addTask(1, "get dinner ready", "order pizza", 1, false, `12-232-434`);
+tasks.addTask(1, "get dinner ready", "order pizza", 1, false, [0, 0, 4]);
 tasks.addTask(
   1,
   "feed birds",
   "give it to them before noon",
   2,
   false,
-  `12-232-434`
+  [0, 0, 3]
 );
-tasks.addTask(1, "do this", "through this", 1, false, `12-232-434`);
-tasks.addTask(1, "sleep", "before 6", 0, false, `12-232-434`);
-tasks.addTask(
-  1,
-  "go to gym",
-  "return the book on the way",
-  1,
-  true,
-  `12-232-434`
-);
+tasks.addTask(1, "do this", "through this", 1, false, [24, 5, 2022]);
+tasks.addTask(1, "sleep", "before 6", 0, false, [0, 0, 3]);
+tasks.addTask(1, "go to gym", "return the book on the way", 1, true, [0, 0, 5]);
+
+const thisDay = function () {
+  const today = document.querySelector(".today");
+
+  today.addEventListener("click", () => {
+    const rightContainer = document.querySelector(".newTask");
+    const tasksDiv = document.querySelector(".tasks");
+    tasksDiv.textContent = "";
+    rightContainer.textContent = "";
+    tasks.lists.forEach((list, listIndex) => {
+      if (tasks.lists.length == 0) return;
+
+      if (tasks.lists[listIndex] == undefined) {
+        const tasksDiv = document.querySelector(".tasks");
+        const rightContainer = document.querySelector(".newTask");
+        tasksDiv.textContent = "";
+        rightContainer.textContent = "";
+        return;
+      }
+      for (let i = 0; i < tasks.lists[listIndex].tasks.length; i++) {
+        const taskDiv = document.createElement("div");
+
+        taskDiv.addEventListener("click", () => {
+          taskDetail(listIndex, i);
+        });
+        taskDiv.classList.add("task");
+        const taskTitle = document.createElement("p");
+        const checkbox = document.createElement("input");
+        checkbox.setAttribute("type", "checkbox");
+        if (tasks.lists[listIndex].tasks[i].checkbox == true) {
+          taskDiv.classList.add("done");
+          checkbox.setAttribute("checked", "checked");
+        }
+        if (tasks.lists[listIndex].tasks[i].checkbox == false) {
+          taskDiv.classList.remove("done");
+        }
+        checkbox.addEventListener("change", (event) => {
+          if (event.currentTarget.checked) {
+            tasks.lists[listIndex].tasks[i].checkbox = true;
+            displayTasks(listIndex);
+          } else {
+            tasks.lists[listIndex].tasks[i].checkbox = false;
+            displayTasks(listIndex);
+          }
+          saveLocal();
+        });
+        taskTitle.textContent = tasks.lists[listIndex].tasks[i].title;
+        const leftTask = document.createElement("div");
+        leftTask.classList.add("leftTask");
+        // // const dueDate = document.createElement("p");
+        // dueDate.textContent = "None";
+        const priority = document.createElement("div");
+        priority.classList.add("priority");
+        priority.style.backgroundColor = `${pColor(
+          tasks.lists[listIndex].tasks[i].priority
+        )}`;
+
+        leftTask.append(priority);
+        taskDiv.append(checkbox, taskTitle, leftTask);
+        tasksDiv.append(taskDiv);
+      }
+      //
+    });
+  });
+};
+
+thisDay();
 displayLists();
 listAdd();

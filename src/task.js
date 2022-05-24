@@ -18,9 +18,9 @@ const task = function () {
     listI,
     title,
     description,
-    taskDate,
     priority,
-    checkbox
+    checkbox,
+    taskDate
   ) {
     let task = newTask(title, description, priority, checkbox, taskDate);
     lists[listI].tasks.push(task);
